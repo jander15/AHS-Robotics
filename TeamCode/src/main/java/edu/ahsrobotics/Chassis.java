@@ -9,6 +9,12 @@ public class Chassis implements MotionRunner {
     private DriveUnit RightBack;
     private DriveUnit LeftBack;
 
+    private double offset = 1.5;
+    private double vDilation = 1;
+    private double hDilation = 3;
+    private double runTime;
+
+
     public Chassis(){
         this.RightFront= new DriveUnit(1,4,"RightFront",false);
         this.LeftFront= new DriveUnit(1,4,"LeftFront",true);
@@ -27,17 +33,17 @@ public class Chassis implements MotionRunner {
 
     public void execute(Motion m){
 
-        double s_location = RightBack.getPosition();
+        double s_location = RightBack.getInchesTravelled();
         StraightMotion s = (StraightMotion) m;
         double test_distance = s.getDistance();
+        runTime = Math.log(Math.pow(10,test_distance)-1);
+        double startTime = System.currentTimeMillis();
 
-        //RightBack.zeroDistance();
-        RightBack.setPower(s.getMotorPower());
-        LeftBack.setPower(s.getMotorPower());
-        RightFront.setPower(s.getMotorPower());
-        LeftFront.setPower(s.getMotorPower());
+        while(Math.abs(s_location)+test_distance>Math.abs(RightBack.getInchesTravelled())){
 
-        while(Math.abs(s_location)+test_distance>Math.abs(RightBack.getPosition())){
+            double desired_distance = controlDistance(System.currentTimeMillis()-startTime);
+            double actual_distance = RightBack.getInchesTravelled();
+            double error = desired_distance-actual_distance;
 
         }
 
@@ -47,4 +53,25 @@ public class Chassis implements MotionRunner {
         LeftFront.setPower(0);
     }
 
+    private double controlDistance(double time){
+        if(time<runTime/2+offset){
+            return rampUp(time);
+        }
+        else{
+            return rampDown(time);
+        }
+    }
+
+//These return the distance we should have travelled in inches
+    private double rampUp(double time){
+        return vDilation*Math.log(1+Math.exp(hDilation*(time-offset)))-vDilation*Math.log(1+Math.exp(hDilation*(0-offset)));
+
+    }
+
+    private double rampDown(double time){
+        return -vDilation*Math.log(1+Math.exp(-(hDilation*(time-runTime)-offset)))+2*rampUp(runTime/2+offset);
+
+    }
+
 }
+
