@@ -37,7 +37,9 @@ public class Chassis implements MotionRunner {
         RightFront.setPower(s.getMotorPower());
         LeftFront.setPower(s.getMotorPower());
 
-        FTCUtilities.OpSleep(2000);
+        while(Math.abs(s_location)+test_distance>Math.abs(RightBack.getPosition())){
+
+        }
 
         RightBack.setPower(0);
         LeftBack.setPower(0);

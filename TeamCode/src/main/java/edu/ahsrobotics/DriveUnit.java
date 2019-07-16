@@ -2,6 +2,7 @@ package edu.ahsrobotics;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+//import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 public class DriveUnit {
     private double gearRatio;
@@ -10,6 +11,7 @@ public class DriveUnit {
     private HardwareMap hardwareMap;
     private DcMotor motor;
     private boolean direction;
+    //private static OpMode opmode;
 
 
     public DriveUnit(double gearRatio, double wheelDiameter, String deviceName, boolean direction) {
@@ -42,10 +44,11 @@ public class DriveUnit {
 
         int ticks = motor.getCurrentPosition();
         double revolutions = ticks/ticksPerRevolution;
-
         double distance = revolutions*wheelDiameter*Math.PI;
 
-        FTCUtilities.getTelemetry().addData("Ticks: "+ticks,FTCUtilities.getTelemetry().update());
+        FTCUtilities.getTelemetry().addData("Ticks: ",ticks);
+        FTCUtilities.getTelemetry().update();
+
         return distance;
 
     }
